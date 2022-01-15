@@ -1,0 +1,6 @@
+{
+  "name": "TenFootGnome",
+  "description": "A ten-foot interface for HTPCs",
+  "uuid": "TenFootGnome@dudewheresmycode.github.com",
+  "shell-version": ["3.36"]
+}

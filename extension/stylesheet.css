@@ -1,0 +1,61 @@
+/* Add your custom extension styling here */
+
+.tf-group {
+  background-image: none;
+  background-color: #000000;
+  background-image: url('assets/background.png');
+  background-size: 'cover';
+}
+.tf-menu {
+  margin: 100px;
+}
+.tf-menu-item {
+  /* border: 4px solid transparent; */
+  /* width: 300px;
+  height: 100px; */
+  margin: 10px 0;
+  color: #fff;
+  font-size: 48px;
+  padding: 20px 0;
+  border-radius: 10px;
+}
+
+.tf-menu-item:hover,
+.tf-menu-item:focus {
+  /* background-gradient-direction: vertical;
+  background-gradient-start: rgba(49, 22, 146, 0.5);
+  background-gradient-end: rgba(0, 0, 0, 0); */
+  /* background-color: rgba(23, 94, 133, 0.25); */
+  background-color: rgba(255, 255, 255, 0.15);
+  /* border-color: #00a5ff; */
+  transition-duration: 150ms;
+}
+
+.tf-menu-item.selected {
+  background-color: lime;
+}
+
+.tf-app-grid {
+  padding: 50px;
+  /* background-color: red; */
+}
+.tf-app-grid .icon-grid {
+  /* background-color: aqua; */
+}
+.tf-app-grid-list {
+}
+.tf-app-grid-item {
+  /* width: 100px;
+  height: 100px;
+  border: 1px solid red;
+  margin: 10px;
+  color: #fff;
+  font-size: 48px;
+  padding: 10px;
+  border-radius: 10px; */
+}
+.tf-app-grid-item:hover,
+.tf-app-grid-item:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  transition-duration: 150ms;
+}
