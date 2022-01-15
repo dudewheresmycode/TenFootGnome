@@ -13,5 +13,7 @@
     "_": "readonly",
     "imports": "readonly"
   },
-  "rules": {}
+  "rules": {
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+  }
 }
