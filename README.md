@@ -8,6 +8,14 @@ TenFoot is a gnome extension that displays a [10-foot](https://en.wikipedia.org/
 
 If you use your computer primarily as an HTPC, there are also a few manual tweaks that you can do to make your gnome more HTPC friendly.
 
+#### Disable Dock (Ubuntu)
+
+```bash
+gnome-extensions disable ubuntu-dock@ubuntu.com
+# to re-enable:
+gnome-extensions enable ubuntu-dock@ubuntu.com
+```
+
 #### Automatic Login
 
 To configure auto-login, edit `/etc/gdm3/custom.conf` and configure like so:
