@@ -2,9 +2,6 @@
 const { Clutter, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 
 const AppFavorites = imports.ui.appFavorites;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Extension = Me.imports.extension;
 const IconGrid = imports.ui.iconGrid;
 const Main = imports.ui.main;
 const Params = imports.misc.params;
