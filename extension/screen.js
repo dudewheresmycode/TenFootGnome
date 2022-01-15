@@ -22,6 +22,8 @@ var TenFootScreen = class {
     // Main.layoutManager.addChrome(Main.layoutManager.tenfootGroup);
     Main.layoutManager.addTopChrome(Main.layoutManager.tenfootGroup);
 
+    this.settings = ExtensionUtils.getSettings(SCHEMA_KEY);
+
     this.actor = Main.layoutManager.tenfootGroup;
     // this.actor.get_accessible().set_role(Atk.Role.WINDOW);
 
@@ -40,16 +42,19 @@ var TenFootScreen = class {
     this.actor.add_child(this.apps);
 
     Main.layoutManager.connect('startup-prepared', () => {
-      this.actor.set_position(0, 0);
-      this.actor.set_size(global.screen_width, global.screen_height);
+      log('startup-prepared');
+      this._adjustSize();
     });
 
     Main.layoutManager.connect('startup-complete', () => {
-      // TODO: Build an auto-startup user pref
-      this.showModal();
+      log('startup-complete');
+      if (this.settings.get_boolean('show-on-startup')) {
+        this.showModal();
+      }
     });
 
     this.actor.connect('show', () => {
+      this._adjustSize();
       this._grabFocus();
     });
 
@@ -57,6 +62,11 @@ var TenFootScreen = class {
 
     Shell.AppSystem.get_default().connect('app-state-changed', this._updateRunningCount.bind(this));
     this._updateRunningCount();
+  }
+
+  _adjustSize() {
+    this.actor.set_position(0, 0);
+    this.actor.set_size(global.screen_width, global.screen_height);
   }
 
   _updateRunningCount() {
@@ -115,16 +125,25 @@ var TenFootScreen = class {
     this._isShown = true;
     // set to the very top of the ui stack to cover all other components
     Main.layoutManager.uiGroup.set_child_below_sibling(this.actor, global.top_window_group);
-    this.actor.show();
-    Main.panel.hide();
+
+    if (!this.actor.visible) {
+      this.actor.opacity = 0;
+      this.actor.show();
+      this.actor.ease({
+        opacity: 255,
+        duration: 1000,
+        mode: Clutter.AnimationMode.EASE_OUT_QUAD
+      });
+    }
   }
 
   hideModal(userHidden = false) {
+    this.actor.remove_all_transitions();
+    this.actor.opacity = 0;
     if (userHidden) {
       this._isShown = false;
     }
     this._removeModal();
-    Main.panel.show();
     this.actor.hide();
   }
 

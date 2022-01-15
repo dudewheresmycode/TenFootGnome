@@ -50,7 +50,13 @@ git clone https://github.com/dudewheresmycode/TenFootGnome.git
 cd TenFootGnome
 ```
 
-2. Then create a link the extensions folder of this project to the `~/.local/share/gnome-shell/extensions` directory.
+2. Compile the schema
+
+```bash
+glib-compile-schemas ./extension/schemas/
+```
+
+3. Then create a link the extensions folder of this project to the `~/.local/share/gnome-shell/extensions` directory.
 
 ```bash
 # make sure the extensions directory exists
@@ -59,9 +65,9 @@ mkdir -p ~/.local/share/gnome-shell/extensions
 ln ./extension ~/.local/share/gnome-shell/extensions/tenfootgnome@dudewheresmycode.github.io
 ```
 
-3. Restart gnome-shell by pressing `Alt` + `F2` and then type `restart` and press enter
+4. Restart gnome-shell by pressing `Alt` + `F2` and then type `restart` and press enter
 
-4. Enable extension:
+5. Enable extension:
 
 ```bash
 gnome-extensions enable tenfootgnome@dudewheresmycode.github.io

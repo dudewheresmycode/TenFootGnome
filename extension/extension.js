@@ -11,6 +11,8 @@ const Main = imports.ui.main;
 // const PopupMenu = imports.ui.popupMenu;
 // const PanelMenu = imports.ui.panelMenu;
 
+window.SCHEMA_KEY = 'org.gnome.shell.extensions.tenfootgnome';
+
 function debug(...args) {
   log(`[tenfoot]`, ...args);
 }
@@ -47,7 +49,9 @@ class TenFoot {
     debug('Restoring window animations');
     Main.wm._shouldAnimate = restoreShouldAnimate;
     debug(`disabling ${Me.metadata.name}`);
-    this._removeModal();
+    this.screen.hideModal();
+    this.screen.destroy();
+    this.screen = null;
     this._indicator.destroy();
     this._indicator = null;
   }
