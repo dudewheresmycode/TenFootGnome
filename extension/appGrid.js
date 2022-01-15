@@ -50,11 +50,11 @@ var AppIcon = GObject.registerClass(
 
       this.label_actor = this.icon.label;
 
-      this._stateChangedId = this.app.connect('notify::state', () => {
-        this._makeFullscreen();
-      });
+      // this._stateChangedId = this.app.connect('notify::state', () => {
+      //   this._makeFullscreen();
+      // });
 
-      this.connect('destroy', this._onDestroy.bind(this));
+      // this.connect('destroy', this._onDestroy.bind(this));
     }
 
     _makeFullscreen() {
@@ -74,12 +74,12 @@ var AppIcon = GObject.registerClass(
       }
     }
 
-    _onDestroy() {
-      if (this._stateChangedId > 0) {
-        this.app.disconnect(this._stateChangedId);
-      }
-      this._stateChangedId = 0;
-    }
+    // _onDestroy() {
+    //   if (this._stateChangedId > 0) {
+    //     this.app.disconnect(this._stateChangedId);
+    //   }
+    //   this._stateChangedId = 0;
+    // }
 
     _createIcon(iconSize) {
       return this.app.create_icon_texture(iconSize);

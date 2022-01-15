@@ -24,8 +24,6 @@ var TenFootScreen = class {
 
     this.actor = Main.layoutManager.tenfootGroup;
     // this.actor.get_accessible().set_role(Atk.Role.WINDOW);
-    // // add to the very top of the ui stack to cover all other components
-    Main.layoutManager.uiGroup.set_child_below_sibling(this.actor, global.top_window_group);
 
     // add menu
     // TODO: Add view manager to switch between these views
@@ -115,6 +113,8 @@ var TenFootScreen = class {
       log('Could not acquire modal grab for the 10-foot screen');
     }
     this._isShown = true;
+    // set to the very top of the ui stack to cover all other components
+    Main.layoutManager.uiGroup.set_child_below_sibling(this.actor, global.top_window_group);
     this.actor.show();
     Main.panel.hide();
   }
