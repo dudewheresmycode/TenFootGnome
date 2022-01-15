@@ -59,7 +59,9 @@ mkdir -p ~/.local/share/gnome-shell/extensions
 ln ./extension ~/.local/share/gnome-shell/extensions/tenfootgnome@dudewheresmycode.github.io
 ```
 
-3. Enable extension:
+3. Restart gnome-shell by pressing `Alt` + `F2` and then type `restart` and press enter
+
+4. Enable extension:
 
 ```bash
 gnome-extensions enable tenfootgnome@dudewheresmycode.github.io
