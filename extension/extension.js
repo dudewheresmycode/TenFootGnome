@@ -38,7 +38,7 @@ class TenFoot {
     this.screen = new TenFootScreen.TenFootScreen();
 
     restoreShouldAnimate = Main.wm._shouldAnimate;
-    Main.wm._shouldAnimate = function (actor) {
+    Main.wm._shouldAnimate = function (_actor) {
       return false;
     };
   }

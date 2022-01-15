@@ -18,6 +18,7 @@ var TenFootScreen = class {
       clip_to_allocation: true,
       layout_manager: new Clutter.BinLayout()
     });
+    this._isShown = false;
     // Main.layoutManager.addChrome(Main.layoutManager.tenfootGroup);
     Main.layoutManager.addTopChrome(Main.layoutManager.tenfootGroup);
 
@@ -64,8 +65,8 @@ var TenFootScreen = class {
     const apps = Shell.AppSystem.get_default().get_running();
     this._nAppsRunning = apps.length;
     if (this._nAppsRunning) {
-      this.hideModal();
-    } else {
+      this.hideModal(false);
+    } else if (this._isShown) {
       this.showModal();
     }
   }
@@ -94,7 +95,7 @@ var TenFootScreen = class {
 
     // press shift-Q to exit interface
     if (symbol == Clutter.KEY_Escape || symbol == Clutter.KEY_Q) {
-      this.hideModal();
+      this.hideModal(true);
       return Clutter.EVENT_STOP;
     }
     return Clutter.EVENT_PROPAGATE;
@@ -103,7 +104,7 @@ var TenFootScreen = class {
   _itemClick(userList, activatedItem) {
     switch (activatedItem.id) {
       case 'exit':
-        this.hideModal();
+        this.hideModal(true);
         break;
     }
   }
@@ -113,11 +114,15 @@ var TenFootScreen = class {
       // TODO: Make this error visible to the user
       log('Could not acquire modal grab for the 10-foot screen');
     }
+    this._isShown = true;
     this.actor.show();
     Main.panel.hide();
   }
 
-  hideModal() {
+  hideModal(userHidden = false) {
+    if (userHidden) {
+      this._isShown = false;
+    }
     this._removeModal();
     Main.panel.show();
     this.actor.hide();
