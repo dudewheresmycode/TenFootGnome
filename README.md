@@ -1,6 +1,39 @@
-# TenFoot
+# TenFootGnome
 
-TenFoot is a gnome extension that displays a [10-foot](https://en.wikipedia.org/wiki/10-foot_user_interface) interface. It makes it easy to browse and launch apps with your keyboard or multi-media remote.
+TenFootGnome is a [gnome extension](https://extensions.gnome.org/) that displays a [10-foot](https://en.wikipedia.org/wiki/10-foot_user_interface) interface. It makes it easy to browse and launch apps with your keyboard or multi-media remote.
+
+---
+
+## User Guide
+
+### Panel Menu
+
+<img src="https://user-images.githubusercontent.com/3523761/149644463-38db5cb9-2243-4d38-8907-40beadb48e6b.png" height="200" />
+
+After the extension is installed, you'll notice a new panel menu at the top of the screen.
+
+- `Help` - Toggling this will launch into the 10-foot interface upon startup.
+
+- `Show on Startup` - Toggling this will launch into the 10-foot interface upon startup.
+
+- `Open Interface` - This will launch into the 10-foot interface.
+
+---
+
+## 10-foot Interface
+
+### Controls
+
+- `↑` / `↓` / `→` / `←`: Arrow keys navigate the home screen.
+- `Enter` / `Space`: Selects focused item
+- `Q`: Exit the 10-foot interface
+
+### Managing Applications
+
+The main grid view will show the applications in your favorites list in a grid. To add a new application to your home screen grid:
+
+1. Simply go to your applications overview. (Exit the 10-foot)
+   right-click on the application you want to add and select Add to Favorites, or Remove from Favorites to remove the app from the grid.
 
 ---
 

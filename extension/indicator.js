@@ -8,6 +8,8 @@ const PopupMenu = imports.ui.popupMenu;
 const PanelMenu = imports.ui.panelMenu;
 const Util = imports.misc.util;
 
+const HELP_URL = 'https://dudewheresmycode.github.io/TenFootGnome/';
+
 var TenFootIndicator = GObject.registerClass(
   class TenFootIndicator extends PanelMenu.Button {
     _init(name) {
@@ -29,9 +31,9 @@ var TenFootIndicator = GObject.registerClass(
       const infoItem = new PopupMenu.PopupMenuItem('TenFootGnome v0.1', { hover: false, reactive: false });
       this.menu.addMenuItem(infoItem);
 
-      const aboutItem = new PopupMenu.PopupMenuItem('About');
-      this.menu.addMenuItem(aboutItem);
-      aboutItem.connect('activate', this._openAbout.bind(this));
+      const helpItem = new PopupMenu.PopupMenuItem('Help');
+      this.menu.addMenuItem(helpItem);
+      helpItem.connect('activate', this._openHelp.bind(this));
 
       this._propSeparator = new PopupMenu.PopupSeparatorMenuItem();
       this.menu.addMenuItem(this._propSeparator);
@@ -62,8 +64,8 @@ var TenFootIndicator = GObject.registerClass(
       openItem.connect('activate', this._openInterface.bind(this));
     }
 
-    _openAbout() {
-      Util.spawn(['xdg-open', 'https://github.com/dudewheresmycode/TenFootGnome']);
+    _openHelp() {
+      Util.spawn(['xdg-open', HELP_URL]);
     }
 
     _openInterface() {
