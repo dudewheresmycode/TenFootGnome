@@ -22,7 +22,7 @@ var MenuListItem = GObject.registerClass(
         x_expand: true,
         child: layout,
         label,
-        reactive: true
+        reactive: false
       });
 
       this.id = id;
@@ -37,7 +37,6 @@ var MenuListItem = GObject.registerClass(
     }
 
     _onKeyPress(actor, event) {
-      log(actor.get_name());
       let symbol = event.get_key_symbol();
       if (symbol === Clutter.KEY_Tab || symbol === Clutter.KEY_Down) {
         this.list.navigate_focus(actor, St.DirectionType.TAB_FORWARD, true);
@@ -97,7 +96,6 @@ var MenuList = GObject.registerClass(
     }
 
     _itemClick(userList, activatedItem) {
-      log(`activate: ${activatedItem.id} ${typeof activatedItem.activate}`);
       if (typeof activatedItem.activate === 'function') {
         activatedItem.activate();
       }
@@ -168,7 +166,6 @@ var MenuList = GObject.registerClass(
     }
 
     _onItemActivated(activatedItem) {
-      log('_onItemActivated', activatedItem.id);
       this.emit('activate', activatedItem);
     }
 
@@ -191,7 +188,6 @@ var InterfaceSettingsView = GObject.registerClass(
     }
 
     back() {
-      log('showInterfaceSettings');
       this.hide();
       this.views.mainView.show();
       this.views.mainView.navigate_focus(this.views.ifaceSettings, St.DirectionType.TAB_FORWARD, false);
@@ -231,14 +227,13 @@ var MainListView = GObject.registerClass(
         label: 'Interface Settings',
         activate: this.showInterfaceSettings.bind(this)
       });
-      this.addItem({ id: 'video-settings', label: 'Video Settings' });
-      this.addItem({ id: 'audio-settings', label: 'Audio Settings' });
+      // this.addItem({ id: 'video-settings', label: 'Video Settings' });
+      // this.addItem({ id: 'audio-settings', label: 'Audio Settings' });
       this.addItem({ id: 'exit', label: 'Exit Interface', activate: () => Extension.tenFoot.screen.exit() });
       this.connect('activate', this._itemClick.bind(this));
     }
 
     showInterfaceSettings() {
-      log('showInterfaceSettings');
       this.hide();
       this.views.ifaceSettings.show();
       this.views.ifaceSettings.navigate_focus(this.views.mainView, St.DirectionType.TAB_FORWARD, false);

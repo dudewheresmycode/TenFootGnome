@@ -26,7 +26,7 @@ var BaseAppIcon = GObject.registerClass(
       super._init({
         style_class: 'app-well-app',
         pivot_point: new Graphene.Point({ x: 0.5, y: 0.5 }),
-        reactive: true,
+        reactive: false,
         button_mask: St.ButtonMask.ONE | St.ButtonMask.TWO,
         can_focus: true
       });
@@ -34,6 +34,9 @@ var BaseAppIcon = GObject.registerClass(
       this.app = app;
       this.name = name;
       this.id = id;
+      if (app.icon) {
+        this.iconName = app.icon;
+      }
 
       this._iconContainer = new St.Widget({ layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: true });
       this.set_child(this._iconContainer);
@@ -54,22 +57,22 @@ var BaseAppIcon = GObject.registerClass(
       this.icon.update();
     }
 
-    _makeFullscreen() {
-      if (this.app.state == Shell.AppState.RUNNING) {
-        // Extension.tenFoot.hide();
-        const windows = this.app.get_windows();
-        if (windows.length === 1) {
-          windows[0].connect('shown', () => {
-            log('window shown');
-            // Extension.tenFoot.hide();
-          });
-          windows[0].make_fullscreen();
-          // Extension.tenFoot.hide(false);
-        }
-      } else {
-        // Extension.tenFoot.show();
-      }
-    }
+    // _makeFullscreen() {
+    //   if (this.app.state == Shell.AppState.RUNNING) {
+    //     // Extension.tenFoot.hide();
+    //     const windows = this.app.get_windows();
+    //     if (windows.length === 1) {
+    //       windows[0].connect('shown', () => {
+    //         log('window shown');
+    //         // Extension.tenFoot.hide();
+    //       });
+    //       windows[0].make_fullscreen();
+    //       // Extension.tenFoot.hide(false);
+    //     }
+    //   } else {
+    //     // Extension.tenFoot.show();
+    //   }
+    // }
 
     // _onDestroy() {
     //   if (this._stateChangedId > 0) {
@@ -95,7 +98,7 @@ var BaseAppIcon = GObject.registerClass(
     }
 
     scaleAndFade() {
-      this.reactive = false;
+      // this.reactive = false;
       this.ease({
         scale_x: 0.75,
         scale_y: 0.75,
@@ -104,7 +107,7 @@ var BaseAppIcon = GObject.registerClass(
     }
 
     undoScaleAndFade() {
-      this.reactive = true;
+      // this.reactive = true;
       this.ease({
         scale_x: 1.0,
         scale_y: 1.0,
@@ -137,18 +140,25 @@ var FauxAppIcon = GObject.registerClass(
     }
 
     activate() {
-      log('activate faux app!');
       switch (this.id) {
         case 'settings':
           Extension.tenFoot.screen.showSettings();
+          break;
+        case 'netflix':
+          Util.spawn(['firefox', '--kiosk', 'https://netflix.com']);
+          break;
+        case 'youtube':
+          Util.spawn(['firefox', '--kiosk', 'https://youtube.com']);
           break;
       }
     }
 
     _createIcon(iconSize) {
-      let iconPath = `${Me.path}/assets/icon-settings.svg`;
-      // just for debug if path is correct
-      log(`${Me.metadata.name}: Icon path=${iconPath}`);
+      if (!this.iconName) {
+        // TODO: Add generic app icon
+        return;
+      }
+      let iconPath = `${Me.path}/assets/${this.iconName}.svg`;
       let gicon = Gio.icon_new_for_string(`${iconPath}`);
       return new St.Icon({ gicon: gicon, icon_size: iconSize });
     }
@@ -233,10 +243,8 @@ var AppView = GObject.registerClass(
         true
       );
 
-      // TODO: Should probably use the paginated grid
+      // QUESTION: Should we use the PaginatedIconGrid here?
       this._grid = new IconGrid.IconGrid(gridParams);
-      // this._grid._onStyleChanged();
-      // this._grid = new IconGrid.PaginatedIconGrid(gridParams);
 
       this._grid.connect('child-focused', (grid, actor) => {
         this._childFocused(actor);
@@ -253,12 +261,10 @@ var AppView = GObject.registerClass(
       this._viewIsReady = false;
 
       this._scrollView = new St.ScrollView({
-        // style_class: 'all-apps',
         overlay_scrollbars: true,
         x_expand: true,
         y_expand: true,
         reactive: true
-        // style: 'background-color: blue;'
       });
       this.add_actor(this._scrollView);
       this._scrollView.set_policy(St.PolicyType.NEVER, St.PolicyType.EXTERNAL);
@@ -267,22 +273,16 @@ var AppView = GObject.registerClass(
       this._stack.add_actor(this._grid);
 
       let box = new St.BoxLayout({
-        // vertical: true,
         x_align: Clutter.ActorAlign.CENTER
-        // y_align: Clutter.ActorAlign.START,
-        // style: 'background-color: green;'
       });
       box.add_actor(this._stack);
       this._scrollView.add_actor(box);
-
-      // this._scrollView.connect('scroll-event', this._onScroll.bind(this));
 
       this._availWidth = 0;
       this._availHeight = 0;
 
       // defer redisplay
       this._redisplayWorkId = Main.initializeDeferredWork(this, this._redisplay.bind(this));
-      // this._hideWorkId = Main.initializeDeferredWork(this, this._hideScreen.bind(this));
 
       Shell.AppSystem.get_default().connect('installed-changed', () => {
         this._viewIsReady = false;
@@ -294,10 +294,17 @@ var AppView = GObject.registerClass(
       this.connect('view-loaded', () => {
         // add our fake app icons to the grid
         let lastIndex = this._items.size;
-        log(`add: ${lastIndex}`);
         // TODO Add custom Settings app
-        const fapp = new FauxAppIcon({ id: 'settings', name: 'Settings' });
-        this._grid.addItem(fapp, lastIndex);
+        const yt_app = new FauxAppIcon({ id: 'youtube', name: 'YouTube', icon: 'youtube' });
+        this._grid.addItem(yt_app, lastIndex);
+
+        lastIndex++;
+        const nf_app = new FauxAppIcon({ id: 'netflix', name: 'Netflix', icon: 'netflix' });
+        this._grid.addItem(nf_app, lastIndex);
+
+        lastIndex++;
+        const s_app = new FauxAppIcon({ id: 'settings', name: 'Settings', icon: 'settings' });
+        this._grid.addItem(s_app, lastIndex++);
       });
     }
 
@@ -429,7 +436,6 @@ var AppView = GObject.registerClass(
       let availHeight = box.y2 - box.y1;
       // let oldNPages = this._grid.nPages();
 
-      log(`availWidth: ${availWidth}, availHeight: ${availHeight}`);
       this._grid.adaptToSize(availWidth, availHeight);
 
       let fadeOffset = Math.min(this._grid.topPadding, this._grid.bottomPadding);

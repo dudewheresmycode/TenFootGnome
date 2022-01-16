@@ -9,6 +9,14 @@ const AppGrid = Me.imports.appGrid;
 
 var TenFootScreen = class {
   constructor() {
+    this.lightbox = new St.Widget({
+      visible: true,
+      can_focus: false,
+      reactive: false,
+      style: 'background-color: #000'
+    });
+    Main.layoutManager.addTopChrome(this.lightbox);
+
     Main.layoutManager.tenfootGroup = new St.Widget({
       name: 'tenfootGroup',
       style_class: 'tf-group',
@@ -25,6 +33,7 @@ var TenFootScreen = class {
     this.settings = ExtensionUtils.getSettings(SCHEMA_KEY);
 
     this.actor = Main.layoutManager.tenfootGroup;
+
     // this.actor.get_accessible().set_role(Atk.Role.WINDOW);
 
     // add menu
@@ -47,7 +56,17 @@ var TenFootScreen = class {
 
     this.actor.connect('show', () => {
       this._adjustSize();
-      this._grabFocus();
+      this._grabFocus(this.apps);
+    });
+
+    this.list.connect('show', () => {
+      this._grabFocus(this.list);
+    });
+    this.apps.appView.connect('view-loaded', () => {
+      this._grabFocus(this.apps.appView);
+    });
+    this.apps.connect('show', () => {
+      this._grabFocus(this.apps.appView, St.DirectionType.TAB_BACKWARD);
     });
 
     global.stage.connect('key-press-event', this._onStageKeyPressed.bind(this));
@@ -62,18 +81,22 @@ var TenFootScreen = class {
   showSettings() {
     this.apps.hide();
     this.list.show();
-    this._grabFocus();
+    // this._grabFocus();
   }
 
   homeScreen() {
     this.list.hide();
     this.apps.show();
-    this._grabFocus();
+    // this._grabFocus();
   }
 
   _adjustSize() {
+    this.lightbox.set_position(0, 0);
+    this.lightbox.set_size(global.screen_width, global.screen_height);
+
     this.actor.set_position(0, 0);
-    this.actor.set_size(global.screen_width, global.screen_height);
+    // this.actor.queue_relayout();
+    this.actor.set_size(Main.layoutManager.primaryMonitor.width, Main.layoutManager.primaryMonitor.height);
   }
 
   _updateRunningCount(appSys, app) {
@@ -91,18 +114,11 @@ var TenFootScreen = class {
     }
   }
 
-  _grabFocus() {
-    if (this.apps.visible) {
-      if (!this.apps.appView._viewIsReady) {
-        this.apps.appView.connect('view-loaded', () => {
-          this.apps.navigate_focus(null, St.DirectionType.TAB_FORWARD, false);
-        });
-      } else {
-        this.apps.navigate_focus(null, St.DirectionType.TAB_FORWARD, false);
-      }
-    } else if (this.list.visible) {
-      this.list.mainView.grab_key_focus();
-      this.list.navigate_focus(null, St.DirectionType.TAB_FORWARD, false);
+  _grabFocus(actor, direction = St.DirectionType.TAB_FORWARD) {
+    if (actor.navigate_focus) {
+      actor.navigate_focus(null, direction, false);
+    } else if (actor.grab_key_focus) {
+      actor.grab_key_focus();
     }
   }
 
@@ -123,14 +139,18 @@ var TenFootScreen = class {
   showModal(skipAnimation = false) {
     if (!this._grabModal()) {
       // TODO: Make this error visible to the user
-      log('Could not acquire modal grab for the 10-foot screen');
+      log('Could not acquire modal grab for the 10-foot screen!');
     }
     this._isShown = true;
     // set to the very top of the ui stack to cover all other components
     Main.layoutManager.uiGroup.set_child_below_sibling(this.actor, global.top_window_group);
+    // set our lightbox below the main ui group
+    Main.layoutManager.uiGroup.set_child_below_sibling(this.lightbox, this.actor);
 
+    // TODO: Figure out how to hide cursor, or retreat to using unclutter
     // global.display.set_cursor(Meta.Cursor.NONE);
-    global.display.set_cursor(Meta.Cursor.CROSSHAIR);
+
+    this.lightbox.show();
 
     if (!this.actor.visible) {
       this.actor.show();
@@ -155,6 +175,7 @@ var TenFootScreen = class {
     }
     global.display.set_cursor(Meta.Cursor.DEFAULT);
     this._removeModal();
+    this.lightbox.hide();
     this.actor.hide();
   }
 
