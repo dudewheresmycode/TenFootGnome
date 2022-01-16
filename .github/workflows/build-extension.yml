@@ -37,4 +37,11 @@ jobs:
           name: ${{fromJson(steps.set_var.outputs.packageJson).uuid}}
           path: ${{ github.workspace }}/extension
 
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ${{ github.workspace }}/extension
+
       - run: echo "This job was a ${{ job.status }}"
