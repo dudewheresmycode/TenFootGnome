@@ -12,7 +12,7 @@ Coming soon to https://extensions.gnome.org, for now you'll have to install via 
 
 ### Panel Menu
 
-<img src="https://user-images.githubusercontent.com/3523761/149644463-38db5cb9-2243-4d38-8907-40beadb48e6b.png" height="200" />
+<img src="https://user-images.githubusercontent.com/3523761/149646804-d8f4c99f-6d19-418b-b88e-99e4a3165ec7.png" height="200" />
 
 After the extension is installed, you'll notice a new panel menu at the top of the screen.
 
