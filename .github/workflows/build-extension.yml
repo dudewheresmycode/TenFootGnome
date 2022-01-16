@@ -40,7 +40,7 @@ jobs:
           echo "::set-output name=packageJson::$content"
 
       - id: set-env
-      - run: |
+        run: |
           export PKG_NAME=${{fromJson(steps.metadata.outputs.packageJson).uuid}}
           export PKG_VERSION=${{fromJson(steps.pkg.outputs.packageJson).version}}
           echo "::set-env name=pkg_name::$PKG_NAME"
