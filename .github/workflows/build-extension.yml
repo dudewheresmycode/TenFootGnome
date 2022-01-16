@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository code
         uses: actions/checkout@v2
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - id: set_var
+      - id: metadata
         run: |
           content=`cat ${{ github.workspace }}/extension/metadata.json`
           # the following lines are only required for multi line json
@@ -28,22 +28,39 @@ jobs:
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
           echo "::set-output name=packageJson::$content"
-      - run: |
-          echo "Building ${{fromJson(steps.set_var.outputs.packageJson).uuid}} extension"
 
-      - name: Glib compile schemas
+      - id: pkg
+        run: |
+          content=`cat ${{ github.workspace }}/package.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=packageJson::$content"
+      - env:
+          - pkg_name: ${{fromJson(steps.metadata.outputs.packageJson).uuid}}
+          - pkg_version: ${{fromJson(steps.pkg.outputs.packageJson).version}}
+      - run: |
+          echo "Building ${{pkg_name}} version ${{pkg_version}}"
+
+      - name: Compiling glib schemas
         run: glib-compile-schemas ${{ github.workspace }}/extension/schemas/
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{fromJson(steps.set_var.outputs.packageJson).uuid}}
+          name: ${{pkg_name}}
           path: ${{ github.workspace }}/extension
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: ${{pkg_name}}
+          path: ${{pkg_name}}
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: |
-            ${{ github.workspace }}/extension
+          files: ${{pkg_name}}/*
 
       - run: echo "This job was a ${{ job.status }}"
