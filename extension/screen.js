@@ -29,14 +29,8 @@ var TenFootScreen = class {
 
     // add menu
     // TODO: Add view manager to switch between these views
-    this.list = new MenuList.MenuList({ visible: false });
-    // add some test items
-    this.list.addItem({ id: 'app', label: 'Launch App' });
-    this.list.addItem({ id: 'settings', label: 'Settings' });
-    this.list.addItem({ id: 'exit', label: 'Exit' });
+    this.list = new MenuList.ListViewManager({ visible: false });
     this.actor.add_child(this.list);
-
-    this.list.connect('activate', this._itemClick.bind(this));
 
     this.apps = new AppGrid.AppGrid({ visible: true });
     this.actor.add_child(this.apps);
@@ -61,13 +55,28 @@ var TenFootScreen = class {
     Shell.AppSystem.get_default().connect('app-state-changed', this._updateRunningCount.bind(this));
   }
 
+  exit() {
+    this.hideModal(true);
+    this.homeScreen();
+  }
+  showSettings() {
+    this.apps.hide();
+    this.list.show();
+    this._grabFocus();
+  }
+
+  homeScreen() {
+    this.list.hide();
+    this.apps.show();
+    this._grabFocus();
+  }
+
   _adjustSize() {
     this.actor.set_position(0, 0);
     this.actor.set_size(global.screen_width, global.screen_height);
   }
 
   _updateRunningCount(appSys, app) {
-    log(appSys, app);
     if (app) {
       if (app.state == Shell.AppState.STARTING) {
         return;
@@ -92,33 +101,23 @@ var TenFootScreen = class {
         this.apps.navigate_focus(null, St.DirectionType.TAB_FORWARD, false);
       }
     } else if (this.list.visible) {
-      this.list.grab_key_focus();
+      this.list.mainView.grab_key_focus();
+      this.list.navigate_focus(null, St.DirectionType.TAB_FORWARD, false);
     }
   }
 
   _onStageKeyPressed(actor, event) {
-    let shift = event.has_shift_modifier();
-    let code = event.get_key_code();
+    // let shift = event.has_shift_modifier();
+    // let code = event.get_key_code();
     let symbol = event.get_key_symbol();
-    log(`key-shift: ${shift}`);
-    log(`key-symbol: ${symbol}`);
-    log(`key-code: ${code}`);
 
-    // press shift-Q to exit interface
-    // 113 = lowercase Q
+    // press Q to exit interface
     if (symbol == Clutter.KEY_Q || symbol == 113) {
+      // 113 = lowercase Q
       this.hideModal(true);
       return Clutter.EVENT_STOP;
     }
     return Clutter.EVENT_PROPAGATE;
-  }
-
-  _itemClick(userList, activatedItem) {
-    switch (activatedItem.id) {
-      case 'exit':
-        this.hideModal(true);
-        break;
-    }
   }
 
   showModal(skipAnimation = false) {
@@ -161,9 +160,7 @@ var TenFootScreen = class {
 
   _removeModal() {
     if (this._isModal) {
-      log('popModal');
-      const res = Main.popModal(this.actor);
-      log('result: ', res);
+      Main.popModal(this.actor);
       this._isModal = false;
     }
   }

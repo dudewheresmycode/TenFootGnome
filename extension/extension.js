@@ -68,6 +68,7 @@ class TenFoot {
       this.screen.actor.hide();
     }
   }
+
   // _hideDesktop() {
   //   this._desktopHidden = true;
   //   Main.panel.hide();

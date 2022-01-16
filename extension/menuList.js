@@ -1,12 +1,16 @@
-/* exported MenuList, MenuListItem */
+/* exported ListViewManager, MainListView, MenuList, MenuListItem */
 const { Clutter, GObject, Meta, St } = imports.gi;
+
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const Extension = Me.imports.extension;
 
 const _SCROLL_ANIMATION_TIME = 500;
 
 var MenuListItem = GObject.registerClass(
   { Signals: { activate: {} } },
   class MenuListItem extends St.Button {
-    _init({ id, label }, parent) {
+    _init({ id, label, activate }, parent) {
       let layout = new St.BoxLayout({
         vertical: true,
         x_align: Clutter.ActorAlign.START
@@ -23,6 +27,7 @@ var MenuListItem = GObject.registerClass(
 
       this.id = id;
       this.list = parent;
+      this.activate = activate;
 
       this.connect('notify::hover', () => {
         this._setSelected(this.hover);
@@ -35,11 +40,9 @@ var MenuListItem = GObject.registerClass(
       log(actor.get_name());
       let symbol = event.get_key_symbol();
       if (symbol === Clutter.KEY_Tab || symbol === Clutter.KEY_Down) {
-        log('Tab down');
         this.list.navigate_focus(actor, St.DirectionType.TAB_FORWARD, true);
         return Clutter.EVENT_STOP;
       } else if (symbol === Clutter.KEY_ISO_Left_Tab || symbol === Clutter.KEY_Up) {
-        log('Tab up');
         this.list.navigate_focus(actor, St.DirectionType.TAB_BACKWARD, true);
         return Clutter.EVENT_STOP;
       }
@@ -91,6 +94,13 @@ var MenuList = GObject.registerClass(
 
       this.add_actor(this._box);
       this._items = {};
+    }
+
+    _itemClick(userList, activatedItem) {
+      log(`activate: ${activatedItem.id} ${typeof activatedItem.activate}`);
+      if (typeof activatedItem.activate === 'function') {
+        activatedItem.activate();
+      }
     }
 
     scrollToItem(item) {
@@ -166,10 +176,72 @@ var MenuList = GObject.registerClass(
       super.vfunc_key_focus_in();
       this._moveFocusToItems();
     }
+  }
+);
 
-    // vfunc_allocate() {
-    //   debug('vfunc_allocate');
-    //   this.grab_key_focus();
-    // }
+var InterfaceSettingsView = GObject.registerClass(
+  class InterfaceSettingsView extends MenuList {
+    _init(params = {}, views) {
+      super._init(params);
+      // add some items
+      this.views = views;
+      this.addItem({ id: 'back', label: 'Back', activate: this.back.bind(this) });
+      this.addItem({ id: 'startup-setting', label: 'Show on Startup' });
+      this.connect('activate', this._itemClick.bind(this));
+    }
+
+    back() {
+      log('showInterfaceSettings');
+      this.hide();
+      this.views.mainView.show();
+      this.views.mainView.navigate_focus(this.views.ifaceSettings, St.DirectionType.TAB_FORWARD, false);
+    }
+  }
+);
+
+var ListViewManager = GObject.registerClass(
+  class ListViewManager extends St.Widget {
+    _init(params = {}) {
+      super._init({
+        ...params,
+        layout_manager: new Clutter.BinLayout(),
+        x_expand: true,
+        y_expand: true
+      });
+
+      this.mainView = new MainListView({}, this);
+      this.ifaceSettings = new InterfaceSettingsView({ visible: false }, this);
+      this.add_actor(this.mainView);
+      this.add_actor(this.ifaceSettings);
+    }
+  }
+);
+
+var MainListView = GObject.registerClass(
+  class MainListView extends MenuList {
+    _init(params = {}, views) {
+      super._init(params);
+      // add some items
+
+      this.views = views;
+
+      this.addItem({ id: 'back', label: 'Back', activate: () => Extension.tenFoot.screen.homeScreen() });
+      this.addItem({
+        id: 'iface-settings',
+        label: 'Interface Settings',
+        activate: this.showInterfaceSettings.bind(this)
+      });
+      this.addItem({ id: 'video-settings', label: 'Video Settings' });
+      this.addItem({ id: 'audio-settings', label: 'Audio Settings' });
+      this.addItem({ id: 'exit', label: 'Exit Interface', activate: () => Extension.tenFoot.screen.exit() });
+      this.connect('activate', this._itemClick.bind(this));
+    }
+
+    showInterfaceSettings() {
+      log('showInterfaceSettings');
+      this.hide();
+      this.views.ifaceSettings.show();
+      this.views.ifaceSettings.navigate_focus(this.views.mainView, St.DirectionType.TAB_FORWARD, false);
+    }
   }
 );

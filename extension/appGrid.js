@@ -1,25 +1,28 @@
 /* exported AppView, AppGrid */
-const { Clutter, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
+const { Clutter, GLib, Gio, GObject, Graphene, Meta, Shell, St } = imports.gi;
 
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const IconGrid = Me.imports.iconGrid;
+const Extension = Me.imports.extension;
 const AppFavorites = imports.ui.appFavorites;
-const IconGrid = imports.ui.iconGrid;
 const Main = imports.ui.main;
 const Params = imports.misc.params;
 const Util = imports.misc.util;
 
 var MAX_COLUMNS = 5;
-var MIN_COLUMNS = 4;
+var MIN_COLUMNS = 3;
 var MIN_ROWS = 4;
 
-var AppIcon = GObject.registerClass(
+var BaseAppIcon = GObject.registerClass(
   {
     Signals: {
       'menu-state-changed': { param_types: [GObject.TYPE_BOOLEAN] },
       'sync-tooltip': {}
     }
   },
-  class AppIcon extends St.Button {
-    _init(app) {
+  class BaseAppIcon extends St.Button {
+    _init(app, name, id) {
       super._init({
         style_class: 'app-well-app',
         pivot_point: new Graphene.Point({ x: 0.5, y: 0.5 }),
@@ -29,32 +32,26 @@ var AppIcon = GObject.registerClass(
       });
 
       this.app = app;
-      this.id = app.get_id();
-      this.name = app.get_name();
+      this.name = name;
+      this.id = id;
 
       this._iconContainer = new St.Widget({ layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: true });
-
       this.set_child(this._iconContainer);
 
       this._delegate = this;
 
-      // // Get the isDraggable property without passing it on to the BaseIcon:
-      // let appIconParams = Params.parse(iconParams, { isDraggable: true }, true);
-      // let isDraggable = appIconParams['isDraggable'];
-      // delete iconParams['isDraggable'];
       const iconParams = {};
       iconParams['createIcon'] = this._createIcon.bind(this);
       iconParams['setSizeManually'] = true;
-      this.icon = new IconGrid.BaseIcon(app.get_name(), iconParams);
+
+      this.icon = new IconGrid.BaseIcon(this.name, iconParams);
+
       this._iconContainer.add_child(this.icon);
-
       this.label_actor = this.icon.label;
+      this.label_actor.style_class = 'tf-grid-icon-label';
 
-      // this._stateChangedId = this.app.connect('notify::state', () => {
-      //   this._makeFullscreen();
-      // });
-
-      // this.connect('destroy', this._onDestroy.bind(this));
+      this.icon.setIconSize(250);
+      this.icon.update();
     }
 
     _makeFullscreen() {
@@ -81,16 +78,8 @@ var AppIcon = GObject.registerClass(
     //   this._stateChangedId = 0;
     // }
 
-    _createIcon(iconSize) {
-      return this.app.create_icon_texture(iconSize);
-    }
-
     vfunc_clicked(button) {
       this.activate(button);
-    }
-
-    getId() {
-      return this.app.get_id();
     }
 
     activateWindow(metaWindow) {
@@ -99,6 +88,83 @@ var AppIcon = GObject.registerClass(
       } else {
         // Main.overview.hide();
       }
+    }
+
+    getId() {
+      return this.id;
+    }
+
+    scaleAndFade() {
+      this.reactive = false;
+      this.ease({
+        scale_x: 0.75,
+        scale_y: 0.75,
+        opacity: 128
+      });
+    }
+
+    undoScaleAndFade() {
+      this.reactive = true;
+      this.ease({
+        scale_x: 1.0,
+        scale_y: 1.0,
+        opacity: 255
+      });
+    }
+
+    animateLaunch() {
+      this.icon.animateZoomOut();
+    }
+
+    animateLaunchAtPos(x, y) {
+      this.icon.animateZoomOutAtPos(x, y);
+    }
+
+    activate() {
+      // implement in the extended class
+    }
+
+    _createIcon() {
+      // implement in the extended class
+    }
+  }
+);
+
+var FauxAppIcon = GObject.registerClass(
+  class FauxAppIcon extends BaseAppIcon {
+    _init(app) {
+      super._init(app, app.name, app.id);
+    }
+
+    activate() {
+      log('activate faux app!');
+      switch (this.id) {
+        case 'settings':
+          Extension.tenFoot.screen.showSettings();
+          break;
+      }
+    }
+
+    _createIcon(iconSize) {
+      let iconPath = `${Me.path}/assets/icon-settings.svg`;
+      // just for debug if path is correct
+      log(`${Me.metadata.name}: Icon path=${iconPath}`);
+      let gicon = Gio.icon_new_for_string(`${iconPath}`);
+      return new St.Icon({ gicon: gicon, icon_size: iconSize });
+    }
+  }
+);
+
+var AppIcon = GObject.registerClass(
+  {
+    Signals: {
+      'menu-state-changed': { param_types: [GObject.TYPE_BOOLEAN] },
+      'sync-tooltip': {}
+    }
+  },
+  class AppIcon extends BaseAppIcon {
+    _init(app) {
+      super._init(app, app.get_name(), app.get_id());
     }
 
     activate(button) {
@@ -118,39 +184,8 @@ var AppIcon = GObject.registerClass(
       }
     }
 
-    animateLaunch() {
-      this.icon.animateZoomOut();
-    }
-
-    animateLaunchAtPos(x, y) {
-      this.icon.animateZoomOutAtPos(x, y);
-    }
-
-    shellWorkspaceLaunch(params) {
-      let { stack } = new Error();
-      log('shellWorkspaceLaunch is deprecated, use app.open_new_window() instead\n%s'.format(stack));
-
-      params = Params.parse(params, { workspace: -1, timestamp: 0 });
-
-      this.app.open_new_window(params.workspace);
-    }
-
-    scaleAndFade() {
-      this.reactive = false;
-      this.ease({
-        scale_x: 0.75,
-        scale_y: 0.75,
-        opacity: 128
-      });
-    }
-
-    undoScaleAndFade() {
-      this.reactive = true;
-      this.ease({
-        scale_x: 1.0,
-        scale_y: 1.0,
-        opacity: 255
-      });
+    _createIcon(iconSize) {
+      return this.app.create_icon_texture(iconSize);
     }
   }
 );
@@ -192,14 +227,15 @@ var AppView = GObject.registerClass(
         {
           columnLimit: MAX_COLUMNS,
           minRows: MIN_ROWS,
-          minColumns: MIN_COLUMNS,
-          padWithSpacing: true
+          minColumns: MIN_COLUMNS
+          // padWithSpacing: true
         },
         true
       );
 
       // TODO: Should probably use the paginated grid
       this._grid = new IconGrid.IconGrid(gridParams);
+      // this._grid._onStyleChanged();
       // this._grid = new IconGrid.PaginatedIconGrid(gridParams);
 
       this._grid.connect('child-focused', (grid, actor) => {
@@ -254,6 +290,15 @@ var AppView = GObject.registerClass(
         this._queueRedisplay();
       });
       AppFavorites.getAppFavorites().connect('changed', this._queueRedisplay.bind(this));
+
+      this.connect('view-loaded', () => {
+        // add our fake app icons to the grid
+        let lastIndex = this._items.size;
+        log(`add: ${lastIndex}`);
+        // TODO Add custom Settings app
+        const fapp = new FauxAppIcon({ id: 'settings', name: 'Settings' });
+        this._grid.addItem(fapp, lastIndex);
+      });
     }
 
     _queueRedisplay() {
@@ -340,13 +385,10 @@ var AppView = GObject.registerClass(
       // Add new app icons
       addedApps.forEach((icon) => {
         let iconIndex = newApps.indexOf(icon);
-
         this._orderedItems.splice(iconIndex, 0, icon);
         this._grid.addItem(icon, iconIndex);
         this._items.set(icon.id, icon);
       });
-
-      // TODO Add custom Settings app
 
       this._viewIsReady = true;
       this.emit('view-loaded');
