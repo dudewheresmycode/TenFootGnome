@@ -32,8 +32,11 @@ After the extension is installed, you'll notice a new panel menu at the top of t
 
 The main grid view will show the applications in your favorites list in a grid. To add a new application to your home screen grid:
 
-1. Simply go to your applications overview. (Exit the 10-foot)
-   right-click on the application you want to add and select Add to Favorites, or Remove from Favorites to remove the app from the grid.
+To manage your favorites:
+
+1. Exit the 10-foot interface (press `Q`), and go to your main applications list.
+1. Right-click on the application you want to add and select Add to Favorites, or Remove from Favorites.
+1. Reopen the 10-foot interface and you should see your customized apps in the grid. See [this guide](https://help.ubuntu.com/stable/ubuntu-help/shell-apps-favorites.html.en) for more information.
 
 ---
 
