@@ -38,9 +38,13 @@ jobs:
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
           echo "::set-output name=packageJson::$content"
-      - env:
-          - pkg_name: ${{fromJson(steps.metadata.outputs.packageJson).uuid}}
-          - pkg_version: ${{fromJson(steps.pkg.outputs.packageJson).version}}
+
+      - run: |
+          export PKG_NAME=${{fromJson(steps.metadata.outputs.packageJson).uuid}}
+          export PKG_VERSION=${{fromJson(steps.pkg.outputs.packageJson).version}}
+          echo "::set-env name=pkg_name::$PKG_NAME"
+          echo "::set-env name=pkg_version::$PKG_VERSION"
+
       - run: |
           echo "Building ${{pkg_name}} version ${{pkg_version}}"
 
