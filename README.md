@@ -6,13 +6,17 @@ TenFootGnome is a [gnome extension](https://extensions.gnome.org/) that displays
 
 ## User Guide
 
+### Getting Started
+
+Coming soon to https://extensions.gnome.org, for now you'll have to install via the [Extension Development](#Extension Development) guide.
+
 ### Panel Menu
 
 <img src="https://user-images.githubusercontent.com/3523761/149644463-38db5cb9-2243-4d38-8907-40beadb48e6b.png" height="200" />
 
 After the extension is installed, you'll notice a new panel menu at the top of the screen.
 
-- `Help` - Toggling this will launch into the 10-foot interface upon startup.
+- `Help` - Clicking this will open the project's help page.
 
 - `Show on Startup` - Toggling this will launch into the 10-foot interface upon startup.
 
@@ -30,7 +34,7 @@ After the extension is installed, you'll notice a new panel menu at the top of t
 
 ### Managing Applications
 
-The main grid view will show the applications in your favorites list in a grid. To add a new application to your home screen grid:
+The main grid view will show the applications in your favorites list in a grid.
 
 To manage your favorites:
 
@@ -43,14 +47,6 @@ To manage your favorites:
 ## Optional Tweaks for HTPCs
 
 If you use your computer primarily as an HTPC, there are also a few manual tweaks that you can do to make your gnome more HTPC friendly.
-
-#### Disable Dock (Ubuntu)
-
-```bash
-gnome-extensions disable ubuntu-dock@ubuntu.com
-# to re-enable:
-gnome-extensions enable ubuntu-dock@ubuntu.com
-```
 
 #### Automatic Login
 
@@ -73,6 +69,14 @@ gsettings set org.gnome.desktop.screensaver lock-enabled false
 gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend false
 # disable screen blanking
 gsettings set org.gnome.desktop.session idle-delay 0
+```
+
+#### Disable Dock (Ubuntu)
+
+```bash
+gnome-extensions disable ubuntu-dock@ubuntu.com
+# to re-enable:
+gnome-extensions enable ubuntu-dock@ubuntu.com
 ```
 
 ---
