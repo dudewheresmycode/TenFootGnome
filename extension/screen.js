@@ -105,7 +105,7 @@ var TenFootScreen = class {
     log(`key-code: ${code}`);
 
     // press shift-Q to exit interface
-    if (symbol == Clutter.KEY_Escape || symbol == Clutter.KEY_Q) {
+    if (symbol == Clutter.KEY_Q) {
       this.hideModal(true);
       return Clutter.EVENT_STOP;
     }
