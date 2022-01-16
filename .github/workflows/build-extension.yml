@@ -56,15 +56,14 @@ jobs:
           name: ${{steps.vars.outputs.pkg_name}}
           path: ${{ github.workspace }}/extension
 
-      - uses: actions/download-artifact@v2
-        with:
-          name: ${{steps.vars.outputs.pkg_name}}
-          path: ${{steps.vars.outputs.pkg_name}}
+      - name: Release - Tar extension folder
+        if: startsWith(github.ref, 'refs/tags/')
+        run: tar -cvf ${{steps.vars.outputs.pkg_name}}-v${{steps.vars.outputs.pkg_version}}.tar ${{ github.workspace }}/extension
 
-      - name: Release
+      - name: Release - Create release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{steps.vars.outputs.pkg_name}}/*
+          files: ${{steps.vars.outputs.pkg_name}}-v${{steps.vars.outputs.pkg_version}}.tar
 
       - run: echo "This job was a ${{ job.status }}"
