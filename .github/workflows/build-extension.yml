@@ -19,7 +19,7 @@ jobs:
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - id: set_var
         run: |
-          content=`cat .${{ github.workspace }}/extension/metadata.json`
+          content=`cat ${{ github.workspace }}/extension/metadata.json`
           # the following lines are only required for multi line json
           content="${content//'%'/'%25'}"
           content="${content//$'\n'/'%0A'}"
