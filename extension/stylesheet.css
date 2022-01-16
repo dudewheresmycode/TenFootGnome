@@ -5,6 +5,7 @@
   background-color: #000000;
   background-image: url('assets/background.png');
   background-size: 'cover';
+  cursor: none;
 }
 .tf-menu {
   margin: 100px;
@@ -36,7 +37,7 @@
 }
 
 .tf-app-grid {
-  padding: 50px;
+  /* padding: 50px; */
   /* background-color: red; */
 }
 .tf-app-grid .icon-grid {

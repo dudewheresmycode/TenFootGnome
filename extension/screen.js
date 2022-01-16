@@ -1,5 +1,5 @@
 /* exported TenFootScreen */
-const { Clutter, Shell, St } = imports.gi;
+const { Clutter, Meta, Shell, St } = imports.gi;
 
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -42,12 +42,10 @@ var TenFootScreen = class {
     this.actor.add_child(this.apps);
 
     Main.layoutManager.connect('startup-prepared', () => {
-      log('startup-prepared');
       this._adjustSize();
     });
 
     Main.layoutManager.connect('startup-complete', () => {
-      log('startup-complete');
       if (this.settings.get_boolean('show-on-startup')) {
         this.showModal();
       }
@@ -61,7 +59,6 @@ var TenFootScreen = class {
     global.stage.connect('key-press-event', this._onStageKeyPressed.bind(this));
 
     Shell.AppSystem.get_default().connect('app-state-changed', this._updateRunningCount.bind(this));
-    this._updateRunningCount();
   }
 
   _adjustSize() {
@@ -69,13 +66,19 @@ var TenFootScreen = class {
     this.actor.set_size(global.screen_width, global.screen_height);
   }
 
-  _updateRunningCount() {
+  _updateRunningCount(appSys, app) {
+    log(appSys, app);
+    if (app) {
+      if (app.state == Shell.AppState.STARTING) {
+        return;
+      }
+    }
     const apps = Shell.AppSystem.get_default().get_running();
     this._nAppsRunning = apps.length;
     if (this._nAppsRunning) {
       this.hideModal(false);
     } else if (this._isShown) {
-      this.showModal();
+      this.showModal(true);
     }
   }
 
@@ -117,7 +120,7 @@ var TenFootScreen = class {
     }
   }
 
-  showModal() {
+  showModal(skipAnimation = false) {
     if (!this._grabModal()) {
       // TODO: Make this error visible to the user
       log('Could not acquire modal grab for the 10-foot screen');
@@ -126,14 +129,21 @@ var TenFootScreen = class {
     // set to the very top of the ui stack to cover all other components
     Main.layoutManager.uiGroup.set_child_below_sibling(this.actor, global.top_window_group);
 
+    // global.display.set_cursor(Meta.Cursor.NONE);
+    global.display.set_cursor(Meta.Cursor.CROSSHAIR);
+
     if (!this.actor.visible) {
-      this.actor.opacity = 0;
       this.actor.show();
-      this.actor.ease({
-        opacity: 255,
-        duration: 1000,
-        mode: Clutter.AnimationMode.EASE_OUT_QUAD
-      });
+      if (!skipAnimation) {
+        this.actor.opacity = 0;
+        this.actor.ease({
+          opacity: 255,
+          duration: 1000,
+          mode: Clutter.AnimationMode.EASE_OUT_QUAD
+        });
+      } else {
+        this.actor.opacity = 255;
+      }
     }
   }
 
@@ -143,6 +153,7 @@ var TenFootScreen = class {
     if (userHidden) {
       this._isShown = false;
     }
+    global.display.set_cursor(Meta.Cursor.DEFAULT);
     this._removeModal();
     this.actor.hide();
   }

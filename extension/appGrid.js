@@ -346,6 +346,8 @@ var AppView = GObject.registerClass(
         this._items.set(icon.id, icon);
       });
 
+      // TODO Add custom Settings app
+
       this._viewIsReady = true;
       this.emit('view-loaded');
     }
@@ -356,8 +358,6 @@ var AppView = GObject.registerClass(
       let favorites = AppFavorites.getAppFavorites().getFavoriteMap();
 
       let appSys = Shell.AppSystem.get_default();
-
-      this._folderIcons = [];
 
       for (let appId in favorites) {
         let icon = this._items.get(appId);
