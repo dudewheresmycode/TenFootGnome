@@ -39,32 +39,32 @@ jobs:
           # end of optional handling for multi line json
           echo "::set-output name=packageJson::$content"
 
-      - id: set-env
+      - id: vars
         run: |
           export PKG_NAME=${{fromJson(steps.metadata.outputs.packageJson).uuid}}
           export PKG_VERSION=${{fromJson(steps.pkg.outputs.packageJson).version}}
-          echo "::set-env name=pkg_name::$PKG_NAME"
-          echo "::set-env name=pkg_version::$PKG_VERSION"
+          echo "::set-output name=pkg_name::$PKG_NAME"
+          echo "::set-output name=pkg_version::$PKG_VERSION"
 
-      - run: echo "Building ${{pkg_name}} version ${{pkg_version}}"
+      - run: echo "Building ${{steps.vars.outputs.pkg_name}}-v${{steps.vars.outputs.pkg_version}}"
 
       - name: Compiling glib schemas
         run: glib-compile-schemas ${{ github.workspace }}/extension/schemas/
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{pkg_name}}
+          name: ${{steps.vars.outputs.pkg_name}}
           path: ${{ github.workspace }}/extension
 
       - uses: actions/download-artifact@v2
         with:
-          name: ${{pkg_name}}
-          path: ${{pkg_name}}
+          name: ${{steps.vars.outputs.pkg_name}}
+          path: ${{steps.vars.outputs.pkg_name}}
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{pkg_name}}/*
+          files: ${{steps.vars.outputs.pkg_name}}/*
 
       - run: echo "This job was a ${{ job.status }}"
