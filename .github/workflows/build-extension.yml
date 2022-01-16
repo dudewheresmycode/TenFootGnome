@@ -19,7 +19,17 @@ jobs:
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
-        run: ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+        run: ls ${{ github.workspace }}/extension/schemas/
+      - name: Glib compile schemas
+        run: glib-compile-schemas ${{ github.workspace }}/extension/schemas/
+      - name: Tar extension folder
+        run: tar -cvf extension.tar ${{ github.workspace }}/extension
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: extension
+          path: extension.tar
+
+      - run: echo "This job was a ${{ job.status }}"
 
     # - run: glib-compile-schemas ${{ github.workspace }}/extension/schemas/
