@@ -31,8 +31,6 @@ jobs:
 
       - name: Glib compile schemas
         run: glib-compile-schemas ${{ github.workspace }}/extension/schemas/
-      # - name: Tar extension folder
-      # run: tar -cvf extension.tar ${{ github.workspace }}/extension
 
       - uses: actions/upload-artifact@v2
         with:
@@ -40,5 +38,3 @@ jobs:
           path: ${{ github.workspace }}/extension
 
       - run: echo "This job was a ${{ job.status }}"
-
-    # - run: glib-compile-schemas ${{ github.workspace }}/extension/schemas/
