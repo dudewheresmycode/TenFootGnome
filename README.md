@@ -8,7 +8,7 @@ TenFootGnome is a [gnome extension](https://extensions.gnome.org/) that displays
 
 ### Getting Started
 
-Coming soon to https://extensions.gnome.org, for now you'll have to install via the [Extension Development](#Extension-Development) guide.
+Coming soon to https://extensions.gnome.org, for now you'll have to install via the [Development Notes](docs/development.md) guide.
 
 ### Panel Menu
 

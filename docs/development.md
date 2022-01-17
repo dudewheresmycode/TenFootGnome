@@ -17,7 +17,7 @@ Compile the schemas. The schemas outline key value pairs for storing extension p
 glib-compile-schemas ./extension/schemas/
 ```
 
-Then create a link the `extensions` folder of this project to the `~/.local/share/gnome-shell/extensions` directory.
+You can create a link to the `extension` folder of this project in the `~/.local/share/gnome-shell/extensions` directory.
 
 ```bash
 # make sure the extensions directory exists
