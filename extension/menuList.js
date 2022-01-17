@@ -37,7 +37,10 @@ var MenuListItem = GObject.registerClass(
 
     _onKeyPress(actor, event) {
       let symbol = event.get_key_symbol();
-      if (symbol === Clutter.KEY_Tab || symbol === Clutter.KEY_Down) {
+      if (symbol === Clutter.KEY_Escape) {
+        // go back
+        this.list.back();
+      } else if (symbol === Clutter.KEY_Tab || symbol === Clutter.KEY_Down) {
         this.list.navigate_focus(actor, St.DirectionType.TAB_FORWARD, true);
         Me.stateObj.screen.sounds._playInterfaceClick();
         return Clutter.EVENT_STOP;
@@ -184,6 +187,9 @@ var MenuList = GObject.registerClass(
       super.vfunc_key_focus_in();
       this._moveFocusToItems();
     }
+
+    // implement when extending
+    back() {}
   }
 );
 
@@ -214,13 +220,14 @@ var MainListView = GObject.registerClass(
 
       this.views = views;
 
-      this.addItem({ id: 'back', label: 'Back', activate: () => Me.stateObj.screen.homeScreen() });
+      this.addItem({ id: 'back', label: 'Back', activate: this.back.bind(this) });
       this.addItem({
         id: 'iface-settings',
         label: 'Interface Settings',
         activate: this.showInterfaceSettings.bind(this)
       });
-      // this.addItem({ id: 'video-settings', label: 'Video Settings' });
+      // TODO:
+      // this.addItem({ id: 'display-settings', label: 'Display Settings' });
       // this.addItem({ id: 'audio-settings', label: 'Audio Settings' });
       this.addItem({ id: 'exit', label: 'Exit Interface', activate: () => Me.stateObj.screen.exit() });
       this.connect('activate', this._itemClick.bind(this));
@@ -230,6 +237,10 @@ var MainListView = GObject.registerClass(
       this.hide();
       this.views.ifaceSettings.show();
       this.views.ifaceSettings.navigate_focus(this.views.mainView, St.DirectionType.TAB_FORWARD, false);
+    }
+
+    back() {
+      Me.stateObj.screen.homeScreen();
     }
   }
 );
