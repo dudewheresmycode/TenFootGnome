@@ -3,7 +3,6 @@ const { Clutter, GObject, Meta, St } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Extension = Me.imports.extension;
 
 const _SCROLL_ANIMATION_TIME = 500;
 
@@ -221,7 +220,7 @@ var MainListView = GObject.registerClass(
 
       this.views = views;
 
-      this.addItem({ id: 'back', label: 'Back', activate: () => Extension.tenFoot.screen.homeScreen() });
+      this.addItem({ id: 'back', label: 'Back', activate: () => Me.stateObj.screen.homeScreen() });
       this.addItem({
         id: 'iface-settings',
         label: 'Interface Settings',
@@ -229,7 +228,7 @@ var MainListView = GObject.registerClass(
       });
       // this.addItem({ id: 'video-settings', label: 'Video Settings' });
       // this.addItem({ id: 'audio-settings', label: 'Audio Settings' });
-      this.addItem({ id: 'exit', label: 'Exit Interface', activate: () => Extension.tenFoot.screen.exit() });
+      this.addItem({ id: 'exit', label: 'Exit Interface', activate: () => Me.stateObj.screen.exit() });
       this.connect('activate', this._itemClick.bind(this));
     }
 

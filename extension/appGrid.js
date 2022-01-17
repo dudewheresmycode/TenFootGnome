@@ -4,7 +4,6 @@ const { Clutter, GLib, Gio, GObject, Graphene, Meta, Shell, St } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const IconGrid = Me.imports.iconGrid;
-const Extension = Me.imports.extension;
 const AppFavorites = imports.ui.appFavorites;
 const Main = imports.ui.main;
 const Params = imports.misc.params;
@@ -57,30 +56,6 @@ var BaseAppIcon = GObject.registerClass(
       this.icon.update();
     }
 
-    // _makeFullscreen() {
-    //   if (this.app.state == Shell.AppState.RUNNING) {
-    //     // Extension.tenFoot.hide();
-    //     const windows = this.app.get_windows();
-    //     if (windows.length === 1) {
-    //       windows[0].connect('shown', () => {
-    //         log('window shown');
-    //         // Extension.tenFoot.hide();
-    //       });
-    //       windows[0].make_fullscreen();
-    //       // Extension.tenFoot.hide(false);
-    //     }
-    //   } else {
-    //     // Extension.tenFoot.show();
-    //   }
-    // }
-
-    // _onDestroy() {
-    //   if (this._stateChangedId > 0) {
-    //     this.app.disconnect(this._stateChangedId);
-    //   }
-    //   this._stateChangedId = 0;
-    // }
-
     vfunc_clicked(button) {
       this.activate(button);
     }
@@ -88,8 +63,6 @@ var BaseAppIcon = GObject.registerClass(
     activateWindow(metaWindow) {
       if (metaWindow) {
         Main.activateWindow(metaWindow);
-      } else {
-        // Main.overview.hide();
       }
     }
 
@@ -98,7 +71,6 @@ var BaseAppIcon = GObject.registerClass(
     }
 
     scaleAndFade() {
-      // this.reactive = false;
       this.ease({
         scale_x: 0.75,
         scale_y: 0.75,
@@ -107,7 +79,6 @@ var BaseAppIcon = GObject.registerClass(
     }
 
     undoScaleAndFade() {
-      // this.reactive = true;
       this.ease({
         scale_x: 1.0,
         scale_y: 1.0,
@@ -142,7 +113,7 @@ var FauxAppIcon = GObject.registerClass(
     activate() {
       switch (this.id) {
         case 'settings':
-          Extension.tenFoot.screen.showSettings();
+          Me.stateObj.screen.showSettings();
           break;
         case 'netflix':
           Util.spawn(['firefox', '--kiosk', 'https://netflix.com']);
@@ -238,7 +209,6 @@ var AppView = GObject.registerClass(
           columnLimit: MAX_COLUMNS,
           minRows: MIN_ROWS,
           minColumns: MIN_COLUMNS
-          // padWithSpacing: true
         },
         true
       );

@@ -3,12 +3,9 @@ const { Gio, GObject, St } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Extension = Me.imports.extension;
 const PopupMenu = imports.ui.popupMenu;
 const PanelMenu = imports.ui.panelMenu;
 const Util = imports.misc.util;
-
-const HELP_URL = 'https://dudewheresmycode.github.io/TenFootGnome/';
 
 var TenFootIndicator = GObject.registerClass(
   class TenFootIndicator extends PanelMenu.Button {
@@ -69,7 +66,7 @@ var TenFootIndicator = GObject.registerClass(
     }
 
     _openInterface() {
-      Extension.tenFoot.show();
+      Me.stateObj.show();
     }
 
     _toggleStartup(actor, value) {
