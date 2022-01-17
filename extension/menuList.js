@@ -84,7 +84,8 @@ var MenuList = GObject.registerClass(
         ...params,
         style_class: 'tf-menu',
         x_expand: true,
-        y_expand: true
+        y_expand: true,
+        y_align: Clutter.ActorAlign.CENTER
       });
       this.set_policy(St.PolicyType.NEVER, St.PolicyType.AUTOMATIC);
 

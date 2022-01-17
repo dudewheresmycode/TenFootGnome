@@ -208,7 +208,8 @@ var AppView = GObject.registerClass(
         {
           columnLimit: MAX_COLUMNS,
           minRows: MIN_ROWS,
-          minColumns: MIN_COLUMNS
+          minColumns: MIN_COLUMNS,
+          padWithSpacing: false
         },
         true
       );

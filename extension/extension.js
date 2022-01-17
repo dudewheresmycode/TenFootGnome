@@ -1,6 +1,6 @@
 /* extension.js */
 /* exported init */
-const { Gio, Meta, Shell } = imports.gi;
+const { Meta, Shell } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -13,8 +13,8 @@ const Main = imports.ui.main;
 window.SCHEMA_KEY = 'org.gnome.shell.extensions.tenfootgnome';
 window.HELP_URL = 'https://dudewheresmycode.github.io/TenFootGnome/';
 
-const MEDIA_KEYS_SCHEMA = 'org.gnome.settings-daemon.plugins.media-keys';
 const DISABLE_ANIMATIONS = true;
+
 var restoreShouldAnimate;
 
 class TenFoot {

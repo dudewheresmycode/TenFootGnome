@@ -6,7 +6,7 @@ const { Clutter, GLib, GObject, Graphene, Meta, St } = imports.gi;
 const Params = imports.misc.params;
 const Main = imports.ui.main;
 
-var ICON_SIZE = 192;
+var ICON_SIZE = 160;
 var MIN_ICON_SIZE = 16;
 
 var ANIMATION_TIME_IN = 350;

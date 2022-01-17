@@ -16,9 +16,10 @@
   height: 100px; */
   margin: 0;
   color: #fff;
-  font-size: 36px;
+  font-size: 48px;
   padding: 30px 0;
   border-radius: 10px;
+  margin-bottom: 30px;
 }
 
 .tf-menu-item:focus {
@@ -40,36 +41,44 @@
   /* background-color: red; */
 }
 .tf-app-grid .icon-grid {
-  spacing: 36px;
-  -shell-grid-horizontal-item-size: 236px;
-  -shell-grid-vertical-item-size: 236px;
+  spacing: 48px;
+  /* -shell-grid-horizontal-item-size: 236px;
+  -shell-grid-vertical-item-size: 236px; */
+  -shell-grid-horizontal-item-size: 256px;
+  -shell-grid-vertical-item-size: 256px;
 }
+.tf-app-grid .app-well-app {
+}
+.tf-app-grid .app-well-app .overview-icon.overview-icon-with-label {
+  padding: 10px 8px 20px 8px;
+}
+.app-well-app .overview-icon.overview-icon-with-label > StBoxLayout,
+.grid-search-result .overview-icon.overview-icon-with-label > StBoxLayout {
+  spacing: 15px;
+}
+.tf-app-grid .app-well-app .overview-icon {
+  border-radius: 25px;
+  icon-size: 160px;
+}
+.tf-app-grid .app-well-app:focus .overview-icon {
+  background-color: rgba(255, 255, 255, 0.33);
+}
+
 .tf-app-grid .icon-grid .overview-icon {
-  /* icon-size: 300px; */
+  /* padding: 20px; */
   /* text-align: center; */
   /* width: 200px;
   height: 200px; */
 }
 
 .tf-grid-icon-label {
-  font-size: 18px;
+  font-size: 32px;
   /* font-weight: bold; */
 }
 
-.tf-app-grid-list {
-}
-.tf-app-grid-item {
-  /* width: 100px;
-  height: 100px;
-  border: 1px solid red;
-  margin: 10px;
-  color: #fff;
-  font-size: 48px;
-  padding: 10px;
-  border-radius: 10px; */
-}
+/* .tf-app-grid-item:active,
 .tf-app-grid-item:hover,
 .tf-app-grid-item:focus {
   background-color: rgba(255, 255, 255, 0.15);
   transition-duration: 150ms;
-}
+} */
