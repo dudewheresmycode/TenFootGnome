@@ -58,6 +58,24 @@ AutomaticLoginEnable=True
 AutomaticLogin=YOUR_USERNAME
 ```
 
+#### Unclutter
+
+Unclutter is a 3rd party utility that will automatically hide the cursor after inactivity.
+
+```bash
+sudo apt install unclutter
+```
+
+> Note: You may need to reboot after installing to enable it.
+
+The default setting of (1s idle) is usually fine, but you can edit in the config file with:
+
+```bash
+# optionally edit startup config
+sudo nano /etc/default/unclutter
+sudo reboot
+```
+
 #### Disable Screen Locking and Blanking
 
 Some optional optimizations for making HTPC's screen "always on".

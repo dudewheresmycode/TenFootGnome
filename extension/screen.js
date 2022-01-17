@@ -198,8 +198,9 @@ var TenFootScreen = class {
       return true;
     }
     this._isModal = Main.pushModal(this.actor, {
-      actionMode: Shell.ActionMode.NONE
-      // options: Meta.ModalOptions.POINTER_ALREADY_GRABBED
+      actionMode: Shell.ActionMode.NONE,
+      // seems to fix unclutter, we don't need the mouse pointer anyways
+      options: Meta.ModalOptions.POINTER_ALREADY_GRABBED
     });
     return this._isModal;
   }
