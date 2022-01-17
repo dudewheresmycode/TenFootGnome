@@ -47,6 +47,26 @@ journalctl -f -o cat /usr/bin/gnome-shell
 killall -3 gnome-shell
 ```
 
+Mapping keys
+
+```bash
+xmodmap -e 'add Control = Escape'
+```
+
+```bash
+showkey -a
+
+Press any keys - Ctrl-D will terminate this program
+
+a    97 0141 0x61
+b    98 0142 0x62
+c    99 0143 0x63
+d   100 0144 0x64
+e   101 0145 0x65
+f   102 0146 0x66
+g   103 0147 0x67
+```
+
 ### Resources
 
 - https://gjs.guide/extensions/development/creating.html
