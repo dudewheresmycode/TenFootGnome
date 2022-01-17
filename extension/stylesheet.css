@@ -21,20 +21,19 @@
   border-radius: 10px;
 }
 
-.tf-menu-item:hover,
 .tf-menu-item:focus {
   /* background-gradient-direction: vertical;
   background-gradient-start: rgba(49, 22, 146, 0.5);
   background-gradient-end: rgba(0, 0, 0, 0); */
   /* background-color: rgba(23, 94, 133, 0.25); */
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.25);
   /* border-color: #00a5ff; */
   transition-duration: 150ms;
 }
 
-.tf-menu-item.selected {
+/* .tf-menu-item.selected {
   background-color: lime;
-}
+} */
 
 .tf-app-grid {
   /* padding: 50px; */
