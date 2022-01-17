@@ -1,21 +1,23 @@
 ## Development Notes
 
-To get started:
+PRs and contributions are welcome! Here's a rough guide on getting started.
 
-1. Clone this repo
+### Setting up the dev environment
+
+Clone this repo
 
 ```bash
 git clone https://github.com/dudewheresmycode/TenFootGnome.git
 cd TenFootGnome
 ```
 
-2. Compile the schema
+Compile the schemas. The schemas outline key value pairs for storing extension preferences. You'll need to do this anytime you make changes to the raw schema xml.
 
 ```bash
 glib-compile-schemas ./extension/schemas/
 ```
 
-3. Then create a link the `extensions` folder of this project to the `~/.local/share/gnome-shell/extensions` directory.
+Then create a link the `extensions` folder of this project to the `~/.local/share/gnome-shell/extensions` directory.
 
 ```bash
 # make sure the extensions directory exists
@@ -24,9 +26,9 @@ mkdir -p ~/.local/share/gnome-shell/extensions
 ln ./extension ~/.local/share/gnome-shell/extensions/tenfootgnome@dudewheresmycode.github.io
 ```
 
-4. Restart gnome-shell by pressing `Alt` + `F2` and then type `restart` and press enter
+Restart gnome-shell by pressing `Alt` + `F2` and then type `restart` and press enter
 
-5. Enable extension:
+Enable the extension:
 
 ```bash
 gnome-extensions enable tenfootgnome@dudewheresmycode.github.io
