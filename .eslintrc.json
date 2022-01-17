@@ -12,7 +12,8 @@
     "log": "readonly",
     "_": "readonly",
     "imports": "readonly",
-    "SCHEMA_KEY": "writable"
+    "SCHEMA_KEY": "writable",
+    "HELP_URL": "writable"
   },
   "rules": {
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]

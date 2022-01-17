@@ -3,5 +3,6 @@
   "description": "A ten-foot interface for HTPCs",
   "url": "https://github.com/dudewheresmycode/TenFootGnome",
   "uuid": "tenfootgnome@dudewheresmycode.github.io",
-  "shell-version": ["3.36"]
+  "shell-version": ["3.36"],
+  "settings-schema": "org.gnome.shell.extensions.tenfootgnome"
 }
