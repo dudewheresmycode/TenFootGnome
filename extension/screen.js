@@ -6,35 +6,34 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const MenuList = Me.imports.menuList;
 const AppGrid = Me.imports.appGrid;
+const Sounds = Me.imports.sounds;
 
 var TenFootScreen = class {
   constructor() {
     this.lightbox = new St.Widget({
       visible: true,
-      can_focus: false,
-      reactive: false,
+      // can_focus: false,
+      // reactive: false,
       style: 'background-color: #000'
     });
     Main.layoutManager.addTopChrome(this.lightbox);
 
-    Main.layoutManager.tenfootGroup = new St.Widget({
+    this.actor = new St.Widget({
       name: 'tenfootGroup',
       style_class: 'tf-group',
       x_expand: true,
       y_expand: true,
+      // can_focus: false,
+      // reactive: false,
       visible: false,
       clip_to_allocation: true,
       layout_manager: new Clutter.BinLayout()
     });
     this._isShown = false;
-    // Main.layoutManager.addChrome(Main.layoutManager.tenfootGroup);
-    Main.layoutManager.addTopChrome(Main.layoutManager.tenfootGroup);
+
+    Main.layoutManager.addTopChrome(this.actor);
 
     this.settings = ExtensionUtils.getSettings(SCHEMA_KEY);
-
-    this.actor = Main.layoutManager.tenfootGroup;
-
-    // this.actor.get_accessible().set_role(Atk.Role.WINDOW);
 
     // add menu
     // TODO: Add view manager to switch between these views
@@ -43,6 +42,8 @@ var TenFootScreen = class {
 
     this.apps = new AppGrid.AppGrid({ visible: true });
     this.actor.add_child(this.apps);
+
+    this.sounds = new Sounds.Sounds();
 
     Main.layoutManager.connect('startup-prepared', () => {
       this._adjustSize();
@@ -115,10 +116,14 @@ var TenFootScreen = class {
   }
 
   _grabFocus(actor, direction = St.DirectionType.TAB_FORWARD) {
-    if (actor.navigate_focus) {
-      actor.navigate_focus(null, direction, false);
-    } else if (actor.grab_key_focus) {
-      actor.grab_key_focus();
+    // fixes issue where item becomes active, but not focused,
+    // likely a race condition if the first focusable child doesn't exist when we move the focus to the root
+    let focusSet = actor.navigate_focus(null, direction, false);
+    if (!focusSet) {
+      Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
+        actor.navigate_focus(null, direction, false);
+        return false;
+      });
     }
   }
 
@@ -177,6 +182,8 @@ var TenFootScreen = class {
     this._removeModal();
     this.lightbox.hide();
     this.actor.hide();
+    // reset
+    this.homeScreen();
   }
 
   _removeModal() {
@@ -190,7 +197,10 @@ var TenFootScreen = class {
     if (this._isModal) {
       return true;
     }
-    this._isModal = Main.pushModal(this.actor, { actionMode: Shell.ActionMode.NORMAL });
+    this._isModal = Main.pushModal(this.actor, {
+      actionMode: Shell.ActionMode.NONE
+      // options: Meta.ModalOptions.POINTER_ALREADY_GRABBED
+    });
     return this._isModal;
   }
 };

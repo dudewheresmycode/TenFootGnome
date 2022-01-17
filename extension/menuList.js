@@ -39,9 +39,11 @@ var MenuListItem = GObject.registerClass(
       let symbol = event.get_key_symbol();
       if (symbol === Clutter.KEY_Tab || symbol === Clutter.KEY_Down) {
         this.list.navigate_focus(actor, St.DirectionType.TAB_FORWARD, true);
+        Me.stateObj.screen.sounds._playInterfaceClick();
         return Clutter.EVENT_STOP;
       } else if (symbol === Clutter.KEY_ISO_Left_Tab || symbol === Clutter.KEY_Up) {
         this.list.navigate_focus(actor, St.DirectionType.TAB_BACKWARD, true);
+        Me.stateObj.screen.sounds._playInterfaceClick();
         return Clutter.EVENT_STOP;
       }
       return Clutter.EVENT_PROPAGATE;
@@ -57,6 +59,7 @@ var MenuListItem = GObject.registerClass(
       this._setSelected(false);
     }
     vfunc_clicked() {
+      Me.stateObj.screen.sounds._playInterfaceClick();
       this.emit('activate');
     }
 
@@ -85,11 +88,19 @@ var MenuList = GObject.registerClass(
         style_class: 'tf-menu',
         x_expand: true,
         y_expand: true,
+        // can_focus: false,
+        // reactive: false,
         y_align: Clutter.ActorAlign.CENTER
       });
-      this.set_policy(St.PolicyType.NEVER, St.PolicyType.AUTOMATIC);
+      // this.set_policy(St.PolicyType.NEVER, St.PolicyType.AUTOMATIC);
 
-      this._box = new St.BoxLayout({ vertical: true, style_class: 'tf-menu-list', pseudo_class: 'expanded' });
+      this._box = new St.BoxLayout({
+        vertical: true,
+        x_expand: true,
+        y_expand: true,
+        style_class: 'tf-menu-list',
+        pseudo_class: 'expanded'
+      });
 
       this.add_actor(this._box);
       this._items = {};
@@ -195,24 +206,6 @@ var InterfaceSettingsView = GObject.registerClass(
   }
 );
 
-var ListViewManager = GObject.registerClass(
-  class ListViewManager extends St.Widget {
-    _init(params = {}) {
-      super._init({
-        ...params,
-        layout_manager: new Clutter.BinLayout(),
-        x_expand: true,
-        y_expand: true
-      });
-
-      this.mainView = new MainListView({}, this);
-      this.ifaceSettings = new InterfaceSettingsView({ visible: false }, this);
-      this.add_actor(this.mainView);
-      this.add_actor(this.ifaceSettings);
-    }
-  }
-);
-
 var MainListView = GObject.registerClass(
   class MainListView extends MenuList {
     _init(params = {}, views) {
@@ -237,6 +230,48 @@ var MainListView = GObject.registerClass(
       this.hide();
       this.views.ifaceSettings.show();
       this.views.ifaceSettings.navigate_focus(this.views.mainView, St.DirectionType.TAB_FORWARD, false);
+    }
+  }
+);
+
+var ListViewManager = GObject.registerClass(
+  class ListViewManager extends St.Widget {
+    _init(params = {}) {
+      super._init({
+        ...params,
+        layout_manager: new Clutter.BinLayout(),
+        reactive: true,
+        can_focus: true,
+        x_expand: true,
+        y_expand: true
+      });
+
+      this.mainView = new MainListView({}, this);
+      this.ifaceSettings = new InterfaceSettingsView({ visible: false }, this);
+      this.add_actor(this.mainView);
+      this.add_actor(this.ifaceSettings);
+    }
+
+    _onAllocatedSizeChanged(actor, width, height) {
+      let box = new Clutter.ActorBox();
+      box.x1 = box.y1 = 0;
+      box.x2 = width;
+      box.y2 = height;
+      box = this._viewStack.get_theme_node().get_content_box(box);
+      let availWidth = box.x2 - box.x1;
+      let availHeight = box.y2 - box.y1;
+      log(`${availWidth} x ${availHeight}`);
+      // this.mainView.adaptToSize(availWidth, availHeight);
+    }
+
+    // vfunc_event() {
+    //   super.vfunc_event();
+    //   log('vfunc_event');
+    // }
+    vfunc_navigate_focus(from, direction) {
+      super.vfunc_navigate_focus(from, direction);
+      this.mainView.navigate_focus(this, St.DirectionType.TAB_FORWARD, false);
+      log('vfunc_navigate_focus', from, direction);
     }
   }
 );

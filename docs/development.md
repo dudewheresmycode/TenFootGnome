@@ -71,3 +71,39 @@ g   103 0147 0x67
 
 - https://gjs.guide/extensions/development/creating.html
 - https://gjs-docs.gnome.org/
+
+### VirtualBox Development
+
+Some notes on using VirtualBox to run Ubuntu for development.
+
+#### Port-forwarding for SSH
+
+- Open virtual box container settings
+- Go to Network > Advanced > Port Forwarding
+- Add a new rule for SSH:
+
+| Name | Protocol | Host IP | Host Port | Guest IP | Guest Port |
+| ---- | -------- | ------- | --------- | -------- | ---------- |
+| ssh  | TCP      |         | 3232      |          | 22         |
+
+- Then you should be able to ssh into the container with `ssh -p 3232 user@127.0.0.1`
+
+> Note: You may also need to install `openssh-server` on a fresh Ubuntu container: (`sudo apt install openssh-server`)
+
+---
+
+#### Add 1920x1080 display resolution:
+
+Add or edit `/usr/share/X11/xorg.conf.d/10-monitor.conf` and add the following:
+
+```
+Section "Monitor"
+    Identifier "Virtual1"
+    Modeline "p1920x1080"  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync
+    Option "PreferredMode" "p1920x1080"
+EndSection
+```
+
+then reboot Ubuntu and open `Settings > Display` and you should be able to select the new resolution from the list.
+
+https://superuser.com/questions/758463/getting-1920x1080-resolution-or-169-aspect-ratio-on-ubuntu-or-linux-mint
