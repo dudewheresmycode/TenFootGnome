@@ -251,6 +251,12 @@ var AppView = GObject.registerClass(
       this._availWidth = 0;
       this._availHeight = 0;
 
+      this.fauxApps = [
+        new FauxAppIcon({ id: 'youtube', name: 'YouTube', icon: 'youtube' }),
+        new FauxAppIcon({ id: 'netflix', name: 'Netflix', icon: 'netflix' }),
+        new FauxAppIcon({ id: 'settings', name: 'Settings', icon: 'settings' })
+      ];
+
       // defer redisplay
       this._redisplayWorkId = Main.initializeDeferredWork(this, this._redisplay.bind(this));
 
@@ -261,21 +267,21 @@ var AppView = GObject.registerClass(
       });
       AppFavorites.getAppFavorites().connect('changed', this._queueRedisplay.bind(this));
 
-      this.connect('view-loaded', () => {
-        // add our fake app icons to the grid
-        let lastIndex = this._items.size;
-        // TODO Add custom Settings app
-        const yt_app = new FauxAppIcon({ id: 'youtube', name: 'YouTube', icon: 'youtube' });
-        this._grid.addItem(yt_app, lastIndex);
+      // this.connect('view-loaded', () => {
+      //   // add our fake app icons to the grid
+      //   let lastIndex = this._items.size;
+      //   // TODO Add custom Settings app
+      //   const yt_app = new FauxAppIcon({ id: 'youtube', name: 'YouTube', icon: 'youtube' });
+      //   this._grid.addItem(yt_app, lastIndex);
 
-        lastIndex++;
-        const nf_app = new FauxAppIcon({ id: 'netflix', name: 'Netflix', icon: 'netflix' });
-        this._grid.addItem(nf_app, lastIndex);
+      //   lastIndex++;
+      //   const nf_app = new FauxAppIcon({ id: 'netflix', name: 'Netflix', icon: 'netflix' });
+      //   this._grid.addItem(nf_app, lastIndex);
 
-        lastIndex++;
-        const s_app = new FauxAppIcon({ id: 'settings', name: 'Settings', icon: 'settings' });
-        this._grid.addItem(s_app, lastIndex++);
-      });
+      //   lastIndex++;
+      //   const s_app = new FauxAppIcon({ id: 'settings', name: 'Settings', icon: 'settings' });
+      //   this._grid.addItem(s_app, lastIndex++);
+      // });
     }
 
     _queueRedisplay() {
@@ -340,6 +346,7 @@ var AppView = GObject.registerClass(
     }
 
     _redisplay() {
+      // copy?
       let oldApps = this._orderedItems.slice();
       let oldAppIds = oldApps.map((icon) => icon.id);
       // TODO: allow custom ordering?
@@ -367,10 +374,19 @@ var AppView = GObject.registerClass(
         this._items.set(icon.id, icon);
       });
 
+      // always add faux apps to end of list
+      this.fauxApps.forEach((icon) => {
+        if (this._grid.contains(icon)) {
+          this._grid.removeItem(icon);
+        }
+        this._grid.addItem(icon);
+      });
+
       this._viewIsReady = true;
       this.emit('view-loaded');
     }
 
+    _addFauxApp() {}
     _loadApps() {
       let appIcons = [];
 
