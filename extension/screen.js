@@ -11,7 +11,7 @@ const Sounds = Me.imports.sounds;
 var TenFootScreen = class {
   constructor() {
     this.lightbox = new St.Widget({
-      visible: true,
+      visible: false,
       // can_focus: false,
       // reactive: false,
       style: 'background-color: #000'
@@ -152,9 +152,6 @@ var TenFootScreen = class {
     // set our lightbox below the main ui group
     Main.layoutManager.uiGroup.set_child_below_sibling(this.lightbox, this.actor);
 
-    // TODO: Figure out how to hide cursor, or retreat to using unclutter
-    // global.display.set_cursor(Meta.Cursor.NONE);
-
     this.lightbox.show();
 
     if (!this.actor.visible) {
@@ -178,7 +175,7 @@ var TenFootScreen = class {
     if (userHidden) {
       this._isShown = false;
     }
-    global.display.set_cursor(Meta.Cursor.DEFAULT);
+
     this._removeModal();
     this.lightbox.hide();
     this.actor.hide();
@@ -198,9 +195,9 @@ var TenFootScreen = class {
       return true;
     }
     this._isModal = Main.pushModal(this.actor, {
-      actionMode: Shell.ActionMode.NONE,
+      actionMode: Shell.ActionMode.NONE
       // seems to fix unclutter, we don't need the mouse pointer anyways
-      options: Meta.ModalOptions.POINTER_ALREADY_GRABBED
+      // options: Meta.ModalOptions.POINTER_ALREADY_GRABBED
     });
     return this._isModal;
   }
